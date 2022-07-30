@@ -8,6 +8,8 @@ import { path } from "./gulp/config/path.js";
 import { plugins } from "./gulp/config/plugins.js";
 
 global.app = {
+    isBuild: process.argv.includes('--build'),
+    isDev: !process.argv.includes('--build'),
     path: path,
     gulp: gulp,
     plugins: plugins
@@ -39,7 +41,11 @@ function watcher() {
 const mainTasks = gulp.series(fonts, copy, html, scss, js, images);
 
 // Построение сценариев выполнения задач
-const dev = gulp.series(reset, mainTasks, gulp.parallel(watcher, server));
+const dev = gulp.series(mainTasks, gulp.parallel(watcher, server));
+const build = gulp.series(reset, mainTasks);
+
+export { dev }
+export { build }
 
 // Выполнение сценария
 gulp.task('default', dev);
